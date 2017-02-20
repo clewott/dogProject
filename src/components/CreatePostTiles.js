@@ -20,6 +20,7 @@ const CreatePostTiles = React.createClass ({
         }
     	return (
 	      	<div className="">
+                <h2>Most Recent Posts</h2>
 	      		<ul>
                     {postTiles}       
                 </ul>
