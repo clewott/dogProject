@@ -1,15 +1,7 @@
 import React, { Component } from 'react';
 import '../styles/App.css';
-import Rebase from 're-base';
+import firebase from 'firebase';
 import CreatePosts from './CreatePosts';
-
-const base = Rebase.createClass({
-  apiKey: "AIzaSyBYtoV4M6Mt7FQvpSNDTboYCh_gnIcXHhc",
-  authDomain: "dogsite-42aea.firebaseapp.com",
-  databaseURL: "https://dogsite-42aea.firebaseio.com",
-  storageBucket: "dogsite-42aea.appspot.com",
-  messagingSenderId: "299867827949"
-});
 
 class Product extends Component {
 
@@ -17,23 +9,28 @@ class Product extends Component {
         super(props);
         this.state = {
             products: [],
-            loading: true
+            loading: false
         }
     }
 
+    addProduct(product) {
+        const newArray = this.state.products.slice();
+        newArray.push(product);
+        this.setState({
+            products: newArray
+        })
+    }
+
     componentDidMount() {
-        this.ref = base.syncState('reviews/' + this.props.params.productName, {
-            context: this,
-            state: 'products',
-            asArray: true,
-            then(){
-                this.setState({loading: false})
-            }
+        const productsRef = firebase.database().ref('reviews/' + this.props.params.productName);
+        const here = this;
+        productsRef.on('child_added', function(data) {
+            here.addProduct(data.val());
         });
     }
 
     componentWillUnmount() {
-        base.removeBinding(this.ref);
+        firebase.database().ref('reviews/' + this.props.params.productName).off();
     }
 
   	render() {

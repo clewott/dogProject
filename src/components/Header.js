@@ -6,6 +6,9 @@ class Header extends Component {
     return (
       <div className="App">
         <div>LOGO GOES HERE</div>
+        <div>
+        	<button><a href="/signin">Login or Sign Up</a></button>
+        </div>
         <div>NAVIGATION GOES HERE</div>
       </div>
     );
