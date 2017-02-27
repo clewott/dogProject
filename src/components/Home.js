@@ -1,39 +1,35 @@
 import React from 'react';
 import CreatePostTiles from './CreatePostTiles';
 import '../styles/App.css';
-import Rebase from 're-base';
-
-const base = Rebase.createClass({
-  apiKey: "AIzaSyBYtoV4M6Mt7FQvpSNDTboYCh_gnIcXHhc",
-  authDomain: "dogsite-42aea.firebaseapp.com",
-  databaseURL: "https://dogsite-42aea.firebaseio.com",
-  storageBucket: "dogsite-42aea.appspot.com",
-  messagingSenderId: "299867827949"
-});
+import firebase from 'firebase';
 
 class Home extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            posts: [],
-            loading: true
+            posts: []
         }
     }
 
+    addPost(post) {
+        const newArray = this.state.posts.slice();
+        newArray.push(post);
+        this.setState({
+            posts: newArray
+        })
+    }
+
     componentDidMount() {
-        this.ref = base.syncState('posts', {
-            context: this,
-            state: 'posts',
-            asArray: true,
-            then(){
-                this.setState({loading: false})
-            }
+        const postsRef = firebase.database().ref('posts');
+        const here = this;
+        postsRef.on('child_added', function(data) {
+            here.addPost(data.val());
         });
     }
 
     componentWillUnmount() {
-        base.removeBinding(this.ref);
+        firebase.database().ref('posts').off();
     }
   
     render() {
@@ -41,7 +37,7 @@ class Home extends React.Component {
             <div className="App">
                 <div>
                     <h2>This is going to be the search input</h2>
-                    {this.state.loading === true ? <h3> LOADING... </h3> : <CreatePostTiles posts={this.state.posts} />}
+                    <CreatePostTiles posts={this.state.posts} />
                 </div>
         
             </div>

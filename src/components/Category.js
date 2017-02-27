@@ -1,5 +1,5 @@
 import React from 'react';
-import * as firebase from 'firebase';
+import firebase from 'firebase';
 import CreatePosts from './CreatePosts';
 import '../styles/App.css';
 

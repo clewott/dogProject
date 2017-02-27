@@ -1,15 +1,7 @@
 import React, { Component } from 'react';
 import UserProductInfo from './UserProductInfo';
 import '../styles/App.css';
-import Rebase from 're-base';
-
-const base = Rebase.createClass({
-  apiKey: "AIzaSyBYtoV4M6Mt7FQvpSNDTboYCh_gnIcXHhc",
-  authDomain: "dogsite-42aea.firebaseapp.com",
-  databaseURL: "https://dogsite-42aea.firebaseio.com",
-  storageBucket: "dogsite-42aea.appspot.com",
-  messagingSenderId: "299867827949"
-});
+import firebase from 'firebase';
 
 class UserForm extends Component {
 
@@ -60,22 +52,18 @@ class UserForm extends Component {
 
 	addProductToData(e) {
 		e.preventDefault();
-		const category = this.state.productCategory.replace(/\s+/g, '_').toLowerCase();
-		const newProducts = this.handleData(this.state);
-
-		base.post('userReviews/' + category, {
-			data: newProducts,
-			then(err) {
-				if(!err) {
-					alert('This was a success!');
-				}
+		const here = this;
+		const category = here.state.productCategory.replace(/\s+/g, '_').toLowerCase();
+		const newProducts = here.handleData(here.state);
+		let updates = {};
+		updates['userReviews/' + category] = newProducts;
+		firebase.database().ref().update(updates).then(function(err) {
+			if(!err) {
+				here.setState({
+	 				submitted: true
+				});
 			}
-		})
-	}
-
-	handleSubmit(event) {
-		alert('A product was submitted: ' + this.state.value);
-		event.preventDefault();
+		});
 	}
 
 	displayProductFormFields() {
